@@ -1,0 +1,13 @@
+{
+  "itemGroup.hellcrafters": "Example Mod Tab",
+  "block.hellcrafters.example_block": "Example Block",
+  "item.hellcrafters.example_item": "Example Item",
+
+  "hellcrafters.configuration.title": "HellCrafters Configs",
+  "hellcrafters.configuration.section.hellcrafters.common.toml": "HellCrafters Configs",
+  "hellcrafters.configuration.section.hellcrafters.common.toml.title": "HellCrafters Configs",
+  "hellcrafters.configuration.items": "Item List",
+  "hellcrafters.configuration.logDirtBlock": "Log Dirt Block",
+  "hellcrafters.configuration.magicNumberIntroduction": "Magic Number Text",
+  "hellcrafters.configuration.magicNumber": "Magic Number"
+}
