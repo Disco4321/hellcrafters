@@ -61,7 +61,7 @@ An attempt at recreating some of the game mechanics within Helldivers 2. The fir
 # The coremods config file path is not configurable and is always loaded from META-INF/coremods.json
 
 # A dependency - use the . to indicate dependency for a specific modid. Dependencies are optional.
-[[dependencies.${mod_id}]] #optional
+[[dependencies.hellcrafters]] #optional
     # the modid of the dependency
     modId="neoforge" #mandatory
     # The type of the dependency. Can be one of "required", "optional", "incompatible" or "discouraged" (case insensitive).
@@ -80,13 +80,27 @@ An attempt at recreating some of the game mechanics within Helldivers 2. The fir
     side="BOTH"
 
 # Here's another dependency
-[[dependencies.${mod_id}]]
+[[dependencies.hellcrafters]]
     modId="minecraft"
     type="required"
     # This version range declares a minimum of the current minecraft version up to but not including the next major version
     versionRange="${minecraft_version_range}"
     ordering="NONE"
     side="BOTH"
+
+#[[dependencies.${mod_id}]]
+#    modId="more_hitboxes"
+#    type="required"
+#    versionRange="[${more_hitboxes_version}]"
+#    ordering="NONE"
+#    side="BOTH"
+
+#[[dependencies.${mod_id}]]
+#    modId="geckolib"
+#    type="required"
+#    versionRange="[${geckolib_version}]"
+#    ordering="NONE"
+#    side="BOTH"
 
 # Features are specific properties of the game environment, that you may want to declare you require. This example declares
 # that your mod requires GL version 3.2 or higher. Other features will be added. They are side aware so declaring this won't
