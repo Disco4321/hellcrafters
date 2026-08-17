@@ -1,0 +1,32 @@
+{
+	"elements": [
+		{
+			"name": "blue",
+			"pos": [0, 0, -4],
+			"width": 4,
+			"height": 4,
+			"ref": "blue_hitbox"
+		},
+		{
+			"name": "purple",
+			"pos": [0, 0, 4],
+			"width": 4,
+			"height": 4,
+			"ref": "purple_hitbox"
+		},
+		{
+			"name": "green",
+			"pos": [-4, 0, 0],
+			"width": 4,
+			"height": 4,
+			"ref": "green_hitbox"
+		},
+		{
+			"name": "red",
+			"pos": [4, 0, 0],
+			"width": 4,
+			"height": 4,
+			"ref": "red_hitbox"
+		}
+	]
+}

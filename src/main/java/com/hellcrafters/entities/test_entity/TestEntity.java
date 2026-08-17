@@ -1,6 +1,7 @@
 package com.hellcrafters.entities.test_entity;
 
 
+import com.github.darkpred.morehitboxes.api.*;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
@@ -14,19 +15,18 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
+import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.AnimatableManager;
-import software.bernie.geckolib.animation.AnimationController;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-import java.nio.file.Path;
 
-public class TestEntity extends PathfinderMob implements GeoEntity {
-    //protected static final RawAnimation FLY_ANIM = RawAnimation.begin().thenLoop("move.fly");
+public class TestEntity extends PathfinderMob implements GeoEntity, GeckoLibMultiPartEntity<TestEntity> {
 
     // Stores our animatable instance, so it can be retrieved later by the renderer and outside areas
     private final AnimatableInstanceCache geoCache = GeckoLibUtil.createInstanceCache(this);
+    private final EntityHitboxData<TestEntity> hitboxData = EntityHitboxDataFactory.create(this);
 
     // We inherit this constructor without the bound on the generic wildcard.
     public TestEntity(EntityType<? extends PathfinderMob> type, Level level) {
@@ -57,5 +57,15 @@ public class TestEntity extends PathfinderMob implements GeoEntity {
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return this.geoCache;
+    }
+
+    // Overridden from the morehitboxes mod
+    @Override
+    public EntityHitboxData<TestEntity> getEntityHitboxData() {
+        return hitboxData;
+    }
+    @Override
+    public boolean partHurt(MultiPart<TestEntity> multiPart, @NotNull DamageSource source, float amount) {
+        return hurt(source, amount);
     }
 }
