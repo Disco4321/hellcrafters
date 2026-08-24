@@ -66,7 +66,7 @@
 					"cubes": []
 				},
 				{
-					"name": "purple_bone",
+					"name": "head",
 					"parent": "bone",
 					"pivot": [1, 0, -1],
 					"cubes": [
@@ -85,8 +85,8 @@
 					]
 				},
 				{
-					"name": "purple_hitbox",
-					"parent": "purple_bone",
+					"name": "head_hitbox",
+					"parent": "head",
 					"pivot": [1, 0, -5],
 					"cubes": []
 				},

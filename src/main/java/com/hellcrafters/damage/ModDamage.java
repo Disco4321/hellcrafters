@@ -6,11 +6,13 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
+import com.mojang.logging.LogUtils;
+import org.slf4j.Logger;
 
-import java.util.HashMap;
-import java.util.Map;
 
 public class ModDamage {
+    public static final Logger LOGGER = LogUtils.getLogger();
+
     // Damage type declarations
     public static final ResourceKey<DamageType> UNARMORED =
             ResourceKey.create(Registries.DAMAGE_TYPE, ResourceLocation.fromNamespaceAndPath(HellCrafters.MODID, "unarmored"));
@@ -25,17 +27,13 @@ public class ModDamage {
     public static final ResourceKey<DamageType> BUILDING =
             ResourceKey.create(Registries.DAMAGE_TYPE, ResourceLocation.fromNamespaceAndPath(HellCrafters.MODID, "building"));
 
-    // Damage type comparison helper
-    public static final Map<ResourceKey<DamageType>, Integer> dictionary = Map.of(
-            UNARMORED,  0,
-            LIGHT,      1,
-            MEDIUM,     2,
-            HEAVY,      3,
-            TANK,       4,
-            BUILDING,   5
-    );
+    public static void convertSourceToValue(DamageSource source) {
+    }
 
-    public void calcDamageMultiplier(DamageSource source, DamageSource source2) {
-
+    public static void calcDamageMultiplier(DamageSource penetrationLevel, DamageSource armorLevel) {
+        //ArmorValue penetration  = ArmorValue.valueOf(penetrationLevel.type().msgId());
+        //ArmorValue armor        = ArmorValue.valueOf(armorLevel.type().msgId());
+        HellCrafters.LOGGER.info("penetration value: " + penetrationLevel.getMsgId().toUpperCase());
+        HellCrafters.LOGGER.info("armor value: " + armorLevel.getMsgId());
     }
 }

@@ -8,11 +8,11 @@
 			"ref": "blue_hitbox"
 		},
 		{
-			"name": "purple",
+			"name": "head",
 			"pos": [0, 0, 4],
 			"width": 4,
 			"height": 4,
-			"ref": "purple_hitbox"
+			"ref": "head_hitbox"
 		},
 		{
 			"name": "green",

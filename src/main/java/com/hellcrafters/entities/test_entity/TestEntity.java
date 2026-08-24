@@ -2,9 +2,10 @@ package com.hellcrafters.entities.test_entity;
 
 
 import com.github.darkpred.morehitboxes.api.*;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.server.level.ServerLevel;
+import com.hellcrafters.HellCrafters;
+import com.hellcrafters.damage.ModDamage;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
@@ -12,26 +13,32 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
+import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.AnimatableManager;
+import software.bernie.geckolib.animation.AnimationController;
+import software.bernie.geckolib.constant.DefaultAnimations;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 
 public class TestEntity extends PathfinderMob implements GeoEntity, GeckoLibMultiPartEntity<TestEntity> {
 
-    // Stores our animatable instance, so it can be retrieved later by the renderer and outside areas
+    // Boilerplate code
     private final AnimatableInstanceCache geoCache = GeckoLibUtil.createInstanceCache(this);
     private final EntityHitboxData<TestEntity> hitboxData = EntityHitboxDataFactory.create(this);
+
 
     // We inherit this constructor without the bound on the generic wildcard.
     public TestEntity(EntityType<? extends PathfinderMob> type, Level level) {
         super(type, level);
     }
+
+
 
 
     public static AttributeSupplier.Builder createAttributes() {
@@ -53,19 +60,34 @@ public class TestEntity extends PathfinderMob implements GeoEntity, GeckoLibMult
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
         //controllers.add(new AnimationController<>(this, "Flying", 5, this::flyAnimController));
-    }
-    @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return this.geoCache;
+        controllers.add(new AnimationController<>(this, "Idle", 0, state -> state.setAndContinue(DefaultAnimations.IDLE)));
     }
 
-    // Overridden from the morehitboxes mod
     @Override
-    public EntityHitboxData<TestEntity> getEntityHitboxData() {
-        return hitboxData;
+    public boolean hurt(DamageSource source, float amount) {
+        ModDamage.calcDamageMultiplier(source, source);
+        return super.hurt(source, amount);
     }
+
+
+    @Override
+    protected InteractionResult mobInteract(Player player, InteractionHand hand) {
+        if( player.getMainHandItem().equals(new ItemStack(Items.STICK, 1)) ) {
+            HellCrafters.LOGGER.info(hand.name());
+            HellCrafters.LOGGER.info(this.getEntityHitboxData().getCustomParts().toString());
+        }
+        return super.mobInteract(player, hand);
+    }
+
+    // required by morehitboxes, gives logic for when a part is hurt
     @Override
     public boolean partHurt(MultiPart<TestEntity> multiPart, @NotNull DamageSource source, float amount) {
         return hurt(source, amount);
     }
+
+    // Boilerplate code from geckolib and morehitboxes
+    @Override
+    public AnimatableInstanceCache getAnimatableInstanceCache() { return this.geoCache; }
+    @Override
+    public EntityHitboxData<TestEntity> getEntityHitboxData() { return hitboxData; }
 }
