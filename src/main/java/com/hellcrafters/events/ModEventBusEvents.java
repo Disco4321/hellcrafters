@@ -1,16 +1,18 @@
 package com.hellcrafters.events;
 
-import com.github.darkpred.morehitboxes.api.GeckoLibMultiPartEntity;
-import com.github.darkpred.morehitboxes.internal.HitboxDataLoader;
 import com.hellcrafters.HellCrafters;
 import com.hellcrafters.registry.EntityRegistry;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.projectile.AbstractArrow;
+import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.Items;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
+import net.neoforged.neoforge.event.entity.ProjectileImpactEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.event.tick.EntityTickEvent;
 
 
 @EventBusSubscriber(modid = HellCrafters.MODID)
@@ -37,17 +39,27 @@ public class ModEventBusEvents {
     public static void onPlayerInteract(PlayerInteractEvent.EntityInteract event) {
         if(event.getSide().isServer()) {
             if(event.getItemStack().is(Items.STICK))
-                if(event.getTarget() instanceof GeckoLibMultiPartEntity<?> entity) {
-                    HellCrafters.LOGGER.info("Entity Type: " + entity);
-                    HellCrafters.LOGGER.info("Entity Parts: " + entity.getEntityHitboxData().getCustomParts().stream().map(p -> p.getEntity().getX()).toList());
-                    //HellCrafters.LOGGER.info(HitboxDataLoader.HITBOX_DATA.getHitboxes(EntityType.getKey(EntityType.byString("TEST_ENTITY").orElseThrow())).stream().toString());
-                    HellCrafters.LOGGER.info(HitboxDataLoader.HITBOX_DATA.getHitboxes(EntityType.getKey(EntityRegistry.TEST_ENTITY.get())).toString());
-                }
+                HellCrafters.LOGGER.info("right click!");
         }
     }
 
     @SubscribeEvent
     public static void onEntityJoinLevel(EntityJoinLevelEvent event) {
         //HellCrafters.LOGGER.info(event.getEntity().toString());
+    }
+
+    @SubscribeEvent
+    public static void onEntityTickEvent(EntityTickEvent.Post event) {
+        if (event.getEntity().level().isClientSide) return;
+        if (!(event.getEntity() instanceof Projectile)) return;
+
+        //if (event.getEntity() instanceof AbstractArrow arrow)
+            //HellCrafters.LOGGER.info("hello");
+
+    }
+
+    @SubscribeEvent
+    public static void onProjectileImpactEvent(ProjectileImpactEvent event) {
+        HellCrafters.LOGGER.info("SOMETHING WAS HIT EVERYBODY PANIC");
     }
 }

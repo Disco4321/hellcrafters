@@ -89,13 +89,6 @@ An attempt at recreating some of the game mechanics within Helldivers 2. The fir
     side="BOTH"
 
 [[dependencies.${mod_id}]]
-    modId="morehitboxes"
-    type="required"
-    versionRange="[1.21.1-1.9.4-alpha]"
-    ordering="NONE"
-    side="BOTH"
-
-[[dependencies.${mod_id}]]
     modId="geckolib"
     type="required"
     versionRange="[4.9.2]"

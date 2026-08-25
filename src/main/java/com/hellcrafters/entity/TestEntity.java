@@ -1,23 +1,26 @@
 package com.hellcrafters.entity;
 
 
-import com.github.darkpred.morehitboxes.api.*;
 import com.hellcrafters.HellCrafters;
-import com.hellcrafters.damage.ModDamage;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
+import com.hellcrafters.util.Collisions;
+import dev.xylonity.knightlib.api.entity.hitbox.BoneHitbox;
+import dev.xylonity.knightlib.api.entity.hitbox.BoneHitboxHolder;
+import dev.xylonity.knightlib.api.entity.hitbox.BoneHitboxManager;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
+import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.AABB;
-import org.jetbrains.annotations.NotNull;
+import net.minecraft.world.phys.EntityHitResult;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.entity.ProjectileImpactEvent;
+import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.AnimatableManager;
@@ -25,20 +28,65 @@ import software.bernie.geckolib.animation.AnimationController;
 import software.bernie.geckolib.constant.DefaultAnimations;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
+import java.util.function.BiConsumer;
 
-public class TestEntity extends HellCrafterMob implements GeoEntity, GeckoLibMultiPartEntity<TestEntity> {
+
+public class TestEntity extends PathfinderMob implements GeoEntity, BoneHitboxHolder {
 
     // Boilerplate code
     private final AnimatableInstanceCache geoCache = GeckoLibUtil.createInstanceCache(this);
-    private final EntityHitboxData<TestEntity> hitboxData = EntityHitboxDataFactory.create(this);
+    private final BoneHitboxManager hitboxManager = new BoneHitboxManager(this);
+
+    // the big check post-hit detection calculating damage
+    private final BiConsumer<BoneHitbox, Entity> onHit = (hitBox, target) -> {
+        // some quick checks to not waste server cycles
+        if(target.level().isClientSide) return;
+        if(!(target instanceof Projectile projectile)) return;
+
+        // determining which hitbox was hit, and determining damage accordingly
+        // we know a projectile entity hit an obb at this point in time, and simply need to
+        // trigger damage events specific to which hitbox/entity shot it
+        HellCrafters.LOGGER.info(hitBox.getBoneName());
+        NeoForge.EVENT_BUS.post(new ProjectileImpactEvent(projectile, new EntityHitResult(this)));
 
 
-    // We inherit this constructor without the bound on the generic wildcard.
+
+        /*switch(hitBox.getBoneName()) {
+            case "red_bone":
+                HellCrafters.LOGGER.info(hitBox.getBoneName());
+                NeoForge.EVENT_BUS.post(new ProjectileImpactEvent(projectile, new EntityHitResult(this)));
+                break;
+            case "green_bone":
+                HellCrafters.LOGGER.info(hitBox.getBoneName());
+                NeoForge.EVENT_BUS.post(new ProjectileImpactEvent(projectile, new EntityHitResult(this)));
+                break;
+            case "head":
+                HellCrafters.LOGGER.info(hitBox.getBoneName());
+                NeoForge.EVENT_BUS.post(new ProjectileImpactEvent(projectile, new EntityHitResult(this)));
+                break;
+            case "blue_bone":
+                HellCrafters.LOGGER.info(hitBox.getBoneName());
+                NeoForge.EVENT_BUS.post(new ProjectileImpactEvent(projectile, new EntityHitResult(this)));
+                break;
+            default:
+                HellCrafters.LOGGER.warn("No bone name found in onHit function!");
+        }*/
+    };
+
+
     public TestEntity(EntityType<? extends PathfinderMob> type, Level level) {
         super(type, level);
+        hitboxManager.onHit(onHit);
+        hitboxManager.add(BoneHitbox.create("red_bone", 1)
+                .filter(Collisions.projectileCollisionFilter)
+                .cooldown(2));
+
+                /*(hitBox, target) -> {
+            HellCrafters.LOGGER.info("I'm hit!");
+            if( hitBox.getBoneName().equalsIgnoreCase("red_bone"))
+                HellCrafters.LOGGER.info("OUCH");
+        });*/
     }
-
-
 
     public static AttributeSupplier.Builder createAttributes() {
         return Animal.createLivingAttributes()
@@ -53,6 +101,13 @@ public class TestEntity extends HellCrafterMob implements GeoEntity, GeckoLibMul
         super.registerGoals();
     }
 
+    @Override
+    public void tick() {
+        super.tick();
+        if (!level().isClientSide) {
+            hitboxManager.tick();
+        }
+    }
 
     // This method is called when your entity is first being used for animations, and
     // is where we define our actual animation handling
@@ -64,29 +119,16 @@ public class TestEntity extends HellCrafterMob implements GeoEntity, GeckoLibMul
 
     @Override
     public boolean hurt(DamageSource source, float amount) {
-        ModDamage.calcDamageMultiplier(source, source);
+        //ModDamage.calcDamageMultiplier(source, source);
+        HellCrafters.LOGGER.info(String.valueOf(hitboxManager.get("red_bone").isEnabled()));
         return super.hurt(source, amount);
     }
 
 
-    @Override
-    protected InteractionResult mobInteract(Player player, InteractionHand hand) {
-        if( player.getMainHandItem().equals(new ItemStack(Items.STICK, 1)) ) {
-            HellCrafters.LOGGER.info(hand.name());
-            HellCrafters.LOGGER.info(this.getEntityHitboxData().getCustomParts().toString());
-        }
-        return super.mobInteract(player, hand);
-    }
 
-    // required by morehitboxes, gives logic for when a part is hurt
-    @Override
-    public boolean partHurt(MultiPart<TestEntity> multiPart, @NotNull DamageSource source, float amount) {
-        return hurt(source, amount);
-    }
-
-    // Boilerplate code from geckolib and morehitboxes
+    // Boilerplate code from geckolib, and KnightLib
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() { return this.geoCache; }
     @Override
-    public EntityHitboxData<TestEntity> getEntityHitboxData() { return hitboxData; }
+    public @Nullable BoneHitboxManager getBoneHitboxManager() { return hitboxManager; }
 }
