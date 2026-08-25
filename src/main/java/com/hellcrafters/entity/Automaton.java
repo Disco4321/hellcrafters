@@ -1,4 +1,4 @@
-package com.hellcrafters.entities;
+package com.hellcrafters.entity;
 
 import com.hellcrafters.damage.ArmorValue;
 import net.minecraft.world.entity.EntityType;

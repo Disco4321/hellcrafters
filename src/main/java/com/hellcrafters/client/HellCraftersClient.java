@@ -1,6 +1,9 @@
-package com.hellcrafters;
+package com.hellcrafters.client;
 
+import com.hellcrafters.HellCrafters;
+import com.hellcrafters.client.renderer.entity.TestEntityRenderer;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
@@ -9,6 +12,8 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
+
+import static com.hellcrafters.registry.EntityRegistry.*;
 
 // This class will not load on dedicated servers. Accessing client side code from here is safe.
 @Mod(value = HellCrafters.MODID, dist = Dist.CLIENT)
@@ -27,5 +32,8 @@ public class HellCraftersClient {
         // Some client setup code
         HellCrafters.LOGGER.info("HELLO FROM CLIENT SETUP");
         HellCrafters.LOGGER.info("MINECRAFT NAME >> {}", Minecraft.getInstance().getUser().getName());
+
+        HellCrafters.LOGGER.info("Registering EntityRenderers...");
+        EntityRenderers.register(TEST_ENTITY.get(), TestEntityRenderer::new);
     }
 }

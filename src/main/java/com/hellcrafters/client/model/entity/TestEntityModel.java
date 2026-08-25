@@ -1,6 +1,7 @@
-package com.hellcrafters.entities.test_entity;
+package com.hellcrafters.client.model.entity;
 
 import com.hellcrafters.HellCrafters;
+import com.hellcrafters.entity.TestEntity;
 import net.minecraft.resources.ResourceLocation;
 import software.bernie.geckolib.model.GeoModel;
 

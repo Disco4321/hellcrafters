@@ -1,4 +1,4 @@
-package com.hellcrafters.entities.test_entity;
+package com.hellcrafters.entity;
 
 
 import com.github.darkpred.morehitboxes.api.*;
@@ -16,7 +16,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
+import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
@@ -26,7 +26,7 @@ import software.bernie.geckolib.constant.DefaultAnimations;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 
-public class TestEntity extends PathfinderMob implements GeoEntity, GeckoLibMultiPartEntity<TestEntity> {
+public class TestEntity extends HellCrafterMob implements GeoEntity, GeckoLibMultiPartEntity<TestEntity> {
 
     // Boilerplate code
     private final AnimatableInstanceCache geoCache = GeckoLibUtil.createInstanceCache(this);
@@ -37,7 +37,6 @@ public class TestEntity extends PathfinderMob implements GeoEntity, GeckoLibMult
     public TestEntity(EntityType<? extends PathfinderMob> type, Level level) {
         super(type, level);
     }
-
 
 
 

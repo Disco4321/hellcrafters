@@ -1,11 +1,10 @@
-package com.hellcrafters.entities.hulk;
+package com.hellcrafters.entity.automaton;
 
 import com.github.darkpred.morehitboxes.api.EntityHitboxData;
 import com.github.darkpred.morehitboxes.api.EntityHitboxDataFactory;
 import com.github.darkpred.morehitboxes.api.GeckoLibMultiPartEntity;
 import com.github.darkpred.morehitboxes.api.MultiPart;
-import com.hellcrafters.entities.Automaton;
-import com.hellcrafters.entities.test_entity.TestEntity;
+import com.hellcrafters.entity.Automaton;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.PathfinderMob;
