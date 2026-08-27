@@ -1,0 +1,23 @@
+{
+  "disable_main_collisions": true,
+  "custom_hitboxes": [
+    {
+      "bone_name": "head",
+      "armor": "UNARMORED"
+    },
+    {
+      "bone_name": "green_bone",
+      "armor": "UNARMORED"
+    },
+    {
+      "bone_name": "red_bone",
+      "armor": "UNARMORED"
+    },
+    {
+      "bone_name": "blue_bone",
+      "armor": "UNARMORED"
+    }
+  ]
+
+
+}
