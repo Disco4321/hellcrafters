@@ -6,6 +6,7 @@ import com.hellcrafters.util.Collisions;
 import dev.xylonity.knightlib.api.entity.hitbox.BoneHitbox;
 import dev.xylonity.knightlib.api.entity.hitbox.BoneHitboxHolder;
 import dev.xylonity.knightlib.api.entity.hitbox.BoneHitboxManager;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -19,6 +20,7 @@ import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.EntityHitResult;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.EventHooks;
 import net.neoforged.neoforge.event.entity.ProjectileImpactEvent;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoEntity;
@@ -31,11 +33,14 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 import java.util.function.BiConsumer;
 
 
-public class TestEntity extends PathfinderMob implements GeoEntity, BoneHitboxHolder {
+public class TestEntity extends HellcrafterEntity {
+    // custom hitbox information
+    private final ResourceLocation hitBoxLocation = ResourceLocation.fromNamespaceAndPath(HellCrafters.MODID, "hitboxes/test_entity.json");
 
-    // Boilerplate code
-    private final AnimatableInstanceCache geoCache = GeckoLibUtil.createInstanceCache(this);
-    private final BoneHitboxManager hitboxManager = new BoneHitboxManager(this);
+    @Override
+    protected void setOnHitBehavior(BiConsumer<BoneHitbox, Entity> behavior) {
+        super.setOnHitBehavior(behavior);
+    }
 
     // the big check post-hit detection calculating damage
     private final BiConsumer<BoneHitbox, Entity> onHit = (hitBox, target) -> {
@@ -47,7 +52,9 @@ public class TestEntity extends PathfinderMob implements GeoEntity, BoneHitboxHo
         // we know a projectile entity hit an obb at this point in time, and simply need to
         // trigger damage events specific to which hitbox/entity shot it
         HellCrafters.LOGGER.info(hitBox.getBoneName());
-        NeoForge.EVENT_BUS.post(new ProjectileImpactEvent(projectile, new EntityHitResult(this)));
+        EventHooks.onProjectileImpact(projectile, new EntityHitResult(this));
+
+        //NeoForge.EVENT_BUS.post(new ProjectileImpactEvent(projectile, new EntityHitResult(this)));
 
 
 
@@ -76,10 +83,12 @@ public class TestEntity extends PathfinderMob implements GeoEntity, BoneHitboxHo
 
     public TestEntity(EntityType<? extends PathfinderMob> type, Level level) {
         super(type, level);
-        hitboxManager.onHit(onHit);
-        hitboxManager.add(BoneHitbox.create("red_bone", 1)
+        //disableMainCollisions = hitBoxLocation;
+        getBoneHitboxManager().onHit(onHit);
+        getBoneHitboxManager().add(BoneHitbox.create("red_bone", 1)
                 .filter(Collisions.projectileCollisionFilter)
                 .cooldown(2));
+        mainHitboxDisabled = true;
 
                 /*(hitBox, target) -> {
             HellCrafters.LOGGER.info("I'm hit!");
@@ -105,7 +114,7 @@ public class TestEntity extends PathfinderMob implements GeoEntity, BoneHitboxHo
     public void tick() {
         super.tick();
         if (!level().isClientSide) {
-            hitboxManager.tick();
+            getBoneHitboxManager().tick();
         }
     }
 
@@ -120,15 +129,8 @@ public class TestEntity extends PathfinderMob implements GeoEntity, BoneHitboxHo
     @Override
     public boolean hurt(DamageSource source, float amount) {
         //ModDamage.calcDamageMultiplier(source, source);
-        HellCrafters.LOGGER.info(String.valueOf(hitboxManager.get("red_bone").isEnabled()));
+        HellCrafters.LOGGER.info(String.valueOf(getBoneHitboxManager().get("red_bone").isEnabled()));
         return super.hurt(source, amount);
     }
 
-
-
-    // Boilerplate code from geckolib, and KnightLib
-    @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() { return this.geoCache; }
-    @Override
-    public @Nullable BoneHitboxManager getBoneHitboxManager() { return hitboxManager; }
 }
