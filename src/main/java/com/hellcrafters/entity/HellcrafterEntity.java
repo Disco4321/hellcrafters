@@ -13,7 +13,6 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.AnimatableManager;
@@ -21,12 +20,14 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.function.BiConsumer;
 
+// This entity is our base for every entity in this mod. Every entity will utilize geckolib for animations,
+// and at least have the ability for extended hitboxes.
 public class HellcrafterEntity extends PathfinderMob implements GeoEntity, BoneHitboxHolder {
 
     private final AnimatableInstanceCache geoCache = GeckoLibUtil.createInstanceCache(this);
     private final BoneHitboxManager hitboxManager = new BoneHitboxManager(this);
 
-    private BiConsumer<BoneHitbox, Entity> onHit;
+    protected BiConsumer<BoneHitbox, Entity> onHit;
     protected Boolean mainHitboxDisabled;
 
 
@@ -40,6 +41,8 @@ public class HellcrafterEntity extends PathfinderMob implements GeoEntity, BoneH
     protected HellcrafterEntity(EntityType<? extends PathfinderMob> entityType, Level level) {
         super(entityType, level);
         mainHitboxDisabled = false;
+        setOnHitBehavior();
+
     }
 
     public static void loadHitboxes() {}
@@ -52,7 +55,15 @@ public class HellcrafterEntity extends PathfinderMob implements GeoEntity, BoneH
                 .add(Attributes.FOLLOW_RANGE, 24D);
     }
 
-    protected void setOnHitBehavior(BiConsumer<BoneHitbox, Entity> behavior) { onHit = behavior; }
+    protected void setOnHitBehavior() {
+        onHit = (BoneHitbox hitbox, Entity entity) -> {
+            if(entity.level().isClientSide) return;
+
+            HellCrafters.LOGGER.info("Hitbox hit: "+hitbox.getBoneName());
+            HellCrafters.LOGGER.info("Entity hitting: "+entity.getName());
+            HellCrafters.LOGGER.info("Entity classname: "+entity.getClass().toString());
+        };
+    }
     protected BiConsumer<BoneHitbox, Entity> getOnHitBehavior() { return this.onHit; }
 
     @Override

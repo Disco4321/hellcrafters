@@ -3,13 +3,15 @@ package com.hellcrafters.registry;
 import com.hellcrafters.HellCrafters;
 import com.hellcrafters.entity.TestEntity;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.Monster;
-import net.minecraft.world.item.Item;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
-import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.function.Supplier;
@@ -51,16 +53,6 @@ public final class EntityRegistry {
 
 
     // --------------------------------------------------
-    // Entity Renderer Registration Section
-    //
-    // --------------------------------------------------
-    // Moved to HellCraftersClient in case client code needs to be near each other
-    //public static void registerRenderers() {
-    //    EntityRenderers.register(TEST_ENTITY.get(), TestEntityRenderer::new);
-    //}
-
-
-    // --------------------------------------------------
     // Helper Method Section
     //
     // --------------------------------------------------
@@ -71,4 +63,7 @@ public final class EntityRegistry {
         return ENTITY_TYPES.register(name, () -> EntityType.Builder.of(entity, MobCategory.CREATURE).sized(width, height).build(name));
     }
 
+    public static void register(IEventBus modEventBus) {
+        ENTITY_TYPES.register(modEventBus);
+    }
 }

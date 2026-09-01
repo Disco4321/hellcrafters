@@ -4,11 +4,8 @@ package com.hellcrafters.entity;
 import com.hellcrafters.HellCrafters;
 import com.hellcrafters.util.Collisions;
 import dev.xylonity.knightlib.api.entity.hitbox.BoneHitbox;
-import dev.xylonity.knightlib.api.entity.hitbox.BoneHitboxHolder;
-import dev.xylonity.knightlib.api.entity.hitbox.BoneHitboxManager;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
@@ -16,33 +13,23 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.EntityHitResult;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.EventHooks;
-import net.neoforged.neoforge.event.entity.ProjectileImpactEvent;
-import org.jetbrains.annotations.Nullable;
-import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.AnimatableManager;
 import software.bernie.geckolib.animation.AnimationController;
 import software.bernie.geckolib.constant.DefaultAnimations;
-import software.bernie.geckolib.util.GeckoLibUtil;
-
-import java.util.function.BiConsumer;
 
 
 public class TestEntity extends HellcrafterEntity {
     // custom hitbox information
     private final ResourceLocation hitBoxLocation = ResourceLocation.fromNamespaceAndPath(HellCrafters.MODID, "hitboxes/test_entity.json");
 
-    @Override
-    protected void setOnHitBehavior(BiConsumer<BoneHitbox, Entity> behavior) {
-        super.setOnHitBehavior(behavior);
-    }
+    /*@Override
+    protected void setOnHitBehavior() {
+        HellCrafters.LOGGER.info("Overridden setOnHitBehavior!");
+    }*/
 
     // the big check post-hit detection calculating damage
+    /*
     private final BiConsumer<BoneHitbox, Entity> onHit = (hitBox, target) -> {
         // some quick checks to not waste server cycles
         if(target.level().isClientSide) return;
@@ -78,7 +65,7 @@ public class TestEntity extends HellcrafterEntity {
             default:
                 HellCrafters.LOGGER.warn("No bone name found in onHit function!");
         }*/
-    };
+    //};
 
 
     public TestEntity(EntityType<? extends PathfinderMob> type, Level level) {

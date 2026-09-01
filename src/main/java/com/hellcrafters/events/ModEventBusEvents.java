@@ -2,15 +2,8 @@ package com.hellcrafters.events;
 
 import com.hellcrafters.HellCrafters;
 import com.hellcrafters.registry.EntityRegistry;
-import com.vicmatskiv.pointblank.event.PlayerEvent;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtOps;
-import net.minecraft.network.syncher.EntityDataAccessor;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.Items;
-import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
@@ -65,7 +58,7 @@ public class ModEventBusEvents {
 
     @SubscribeEvent
     public static void onProjectileImpactEvent(ProjectileImpactEvent event) {
-        //HellCrafters.LOGGER.info(event.getProjectile().getEntityData().get(new EntityDataAccessor<>("is")).toString());
+        if(event.getEntity().level().isClientSide) return;
         HellCrafters.LOGGER.info(event.getRayTraceResult().getType().toString());
         HellCrafters.LOGGER.info("SOMETHING WAS HIT EVERYBODY PANIC");
     }

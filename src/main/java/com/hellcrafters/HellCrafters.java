@@ -3,23 +3,18 @@ package com.hellcrafters;
 import com.hellcrafters.registry.BlockRegistry;
 import com.hellcrafters.registry.EntityRegistry;
 import com.hellcrafters.registry.ItemRegistry;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
-import org.slf4j.Logger;
-
 import com.mojang.logging.LogUtils;
-
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.block.Blocks;
-import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
-import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
+import org.slf4j.Logger;
 
 // The value here should match an entry in the META-INF/neoforge.mods.toml file
 @Mod(HellCrafters.MODID)
@@ -31,27 +26,16 @@ public class HellCrafters {
 
 
 
-
-
-
-
-
-
-
     // The constructor for the mod class is the first code that is run when your mod is loaded.
     // FML will recognize some parameter types like IEventBus or ModContainer and pass them in automatically.
     public HellCrafters(IEventBus modEventBus, ModContainer modContainer) {
         // Register the commonSetup method for modloading
         modEventBus.addListener(this::commonSetup);
 
-        // Register the Deferred Register to the mod event bus so blocks get registered
-        BlockRegistry.BLOCKS.register(modEventBus);
-        // Register the Deferred Register to the mod event bus so items get registered
-        ItemRegistry.ITEMS.register(modEventBus);
-        // Register the Deferred Register to the mod event bus so tabs get registered
-        ItemRegistry.CREATIVE_MODE_TABS.register(modEventBus);
-        // Registering the custom mobs
-        EntityRegistry.ENTITY_TYPES.register(modEventBus);
+        // Registers everything cleanly
+        BlockRegistry.register(modEventBus);
+        ItemRegistry.register(modEventBus);
+        EntityRegistry.register(modEventBus);
 
         // Register ourselves for server and other game events we are interested in.
         // Note that this is necessary if and only if we want *this* class (HellCrafters) to respond directly to events.
