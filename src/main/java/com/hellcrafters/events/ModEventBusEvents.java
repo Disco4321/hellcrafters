@@ -15,6 +15,8 @@ import net.neoforged.neoforge.event.tick.EntityTickEvent;
 
 @EventBusSubscriber(modid = HellCrafters.MODID)
 public class ModEventBusEvents {
+    private static long currentTick = 0;
+
     @SubscribeEvent
     public static void registerAttributes(EntityAttributeCreationEvent event) {
 
@@ -63,6 +65,26 @@ public class ModEventBusEvents {
         HellCrafters.LOGGER.info("SOMETHING WAS HIT EVERYBODY PANIC");
     }
 
-    //@SubscribeEvent
-    //public static void onEvent(PlayerEvent event) {HellCrafters.LOGGER.info(event.toString());}
+
+    /*
+    An attempt in hooking into the geoentity render event in order to find decent timing in updating
+    the mob's hitboxes. Pretty sure this runs every frame tho instead of every tick, so it's currently waaaay too fast
+    for our needs
+     */
+    /*
+    @SubscribeEvent
+    public static void onGeoEntityRenderEvent(GeoRenderEvent.Entity.Post event) {
+        HellCrafters.LOGGER.info("Render successful");
+        if(event.getPartialTick() != 0.0) return;
+        HellCrafters.LOGGER.info("Partial Tick 0.0!");
+
+        // filters any entity that's not ours, and doesn't have OBB hitboxes
+        if(!(event.getEntity() instanceof HellcrafterEntity entity)) return;
+        if(entity.hitboxBoneNames.isEmpty()) return;
+        entity.hitboxBoneNames.forEach( boneName -> {
+            event.getModel().getBone(boneName).get();
+        });
+            //event.getModel().searchForChildBone()
+    }
+     */
 }

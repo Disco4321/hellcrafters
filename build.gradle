@@ -29,7 +29,7 @@ sourceSets.main.resources {
 
 repositories {
     // Add here additional repositories if required by some of the dependencies below.
-    maven {
+    maven { // For GeckoLib
         name = 'GeckoLib'
         url = 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/'
         content {
@@ -39,6 +39,18 @@ repositories {
     maven {
         name = "Xylonity's vault"
         url = "https://raw.githubusercontent.com/Xylonity/maven-centralish/main/maven/"
+    }
+    maven { // For ImGuiMC
+        url = "https://maven.ryanhcode.dev/releases"
+        name = "RyanHCode Maven"
+    }
+    maven { // For Veil
+        name = 'BlameJared Maven (CrT / Bookshelf)'
+        url = 'https://maven.blamejared.com'
+    }
+    maven { // For customhitboxlib
+        name = "Modrinth"
+        url = "https://api.modrinth.com/maven"
     }
 }
 
@@ -146,9 +158,19 @@ dependencies {
     compileOnly "dev.xylonity.knightlib:knightlib-common-${minecraft_version}:${knightlib_version}"
 
     // Example mod dependency using a file as dependency
-    // implementation files("libs/coolmod-${mc_version}-${coolmod_version}.jar")
-    implementation files("libs/pointblank-neoforge-1.21-${pointblank_version}.jar")
+    implementation files("libs/tacz-neoforge-${minecraft_version}-${tacz_version}-hotfix-r6.jar")
     runtimeOnly files("libs/knightlib-neoforge-${minecraft_version}-${knightlib_version}.jar")
+
+    // for CustomHitboxLib
+    //implementation "com.gawrmonster:customhitboxlib:${customhitboxlib_version}"
+    //implementation "maven.modrinth:mSq9nbGC:OVI6nnEL"
+    implementation files("libs/customhitboxlib-${customhitboxlib_version}.jar")
+
+    //implementation("foundry.veil:veil-neoforge-${minecraft_version}:${veil_version}") {
+    //    exclude group: "maven.modrinth"
+    //    exclude group: "me.fallenbreath"
+    //}
+    //implementation("foundry.imguimc:imguimc-neoforge-${minecraft_version}:${imguimc_version}")
 
     // Example project dependency using a sister or child project:
     // implementation project(":myproject")
@@ -158,6 +180,7 @@ dependencies {
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
 }
 
+/*
 // This block of code expands all declared replace properties in the specified resource targets.
 // A missing property will result in an error. Properties are expanded using ${} Groovy notation.
 var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {
@@ -172,15 +195,33 @@ var generateModMetadata = tasks.register("generateModMetadata", ProcessResources
             mod_version            : mod_version,
     ]
     inputs.properties replaceProperties
-    expand replaceProperties
-    from "src/main/templates"
-    into "build/generated/sources/modMetadata"
+    filesMatching('META-INF/neoforge.mods.toml') {
+        expand replaceProperties
+    }
 }
 // Include the output of "generateModMetadata" as an input directory for the build
 // this works with both building through Gradle and the IDE.
 sourceSets.main.resources.srcDir generateModMetadata
 // To avoid having to run "generateModMetadata" manually, make it run on every project reload
 neoForge.ideSyncTask generateModMetadata
+*/
+tasks.withType(ProcessResources).configureEach {
+    def replaceProperties = [
+            minecraft_version       : minecraft_version,
+            minecraft_version_range : minecraft_version_range,
+            neo_version             : neo_version,
+            loader_version_range    : loader_version_range,
+            mod_id                  : mod_id,
+            mod_name                : mod_name,
+            mod_license             : mod_license,
+            mod_version             : mod_version
+    ]
+
+    inputs.properties replaceProperties
+    filesMatching('META-INF/neoforge.mods.toml') {
+        expand replaceProperties
+    }
+}
 
 // Example configuration to allow publishing using the maven-publish plugin
 publishing {

@@ -2,8 +2,8 @@ package com.hellcrafters.entity;
 
 
 import com.hellcrafters.HellCrafters;
-import com.hellcrafters.util.Collisions;
-import dev.xylonity.knightlib.api.entity.hitbox.BoneHitbox;
+import dev.customhitboxlib.api.PartDefinition;
+import dev.customhitboxlib.api.PartPositioners;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
@@ -19,7 +19,7 @@ import software.bernie.geckolib.animation.AnimationController;
 import software.bernie.geckolib.constant.DefaultAnimations;
 
 
-public class TestEntity extends HellcrafterEntity {
+public class TestEntity extends HellcrafterEntity{
     // custom hitbox information
     private final ResourceLocation hitBoxLocation = ResourceLocation.fromNamespaceAndPath(HellCrafters.MODID, "hitboxes/test_entity.json");
 
@@ -70,18 +70,20 @@ public class TestEntity extends HellcrafterEntity {
 
     public TestEntity(EntityType<? extends PathfinderMob> type, Level level) {
         super(type, level);
-        //disableMainCollisions = hitBoxLocation;
-        getBoneHitboxManager().onHit(onHit);
-        getBoneHitboxManager().add(BoneHitbox.create("red_bone", 1)
-                .filter(Collisions.projectileCollisionFilter)
-                .cooldown(2));
-        mainHitboxDisabled = true;
+
+
+        this.addCustomPart("head", PartDefinition.of("head", 1.0F, 1.0F, PartPositioners.atOffset(1, 1, 1), true));
+        //getBoneHitboxManager().add(BoneHitbox.create("red_bone", 1)
+                //.filter(Collisions.projectileCollisionFilter)
+                //.cooldown(2));
+        //mainHitboxDisabled = true;
 
                 /*(hitBox, target) -> {
             HellCrafters.LOGGER.info("I'm hit!");
             if( hitBox.getBoneName().equalsIgnoreCase("red_bone"))
                 HellCrafters.LOGGER.info("OUCH");
         });*/
+
     }
 
     public static AttributeSupplier.Builder createAttributes() {
@@ -101,7 +103,6 @@ public class TestEntity extends HellcrafterEntity {
     public void tick() {
         super.tick();
         if (!level().isClientSide) {
-            getBoneHitboxManager().tick();
         }
     }
 
@@ -115,8 +116,6 @@ public class TestEntity extends HellcrafterEntity {
 
     @Override
     public boolean hurt(DamageSource source, float amount) {
-        //ModDamage.calcDamageMultiplier(source, source);
-        HellCrafters.LOGGER.info(String.valueOf(getBoneHitboxManager().get("red_bone").isEnabled()));
         return super.hurt(source, amount);
     }
 

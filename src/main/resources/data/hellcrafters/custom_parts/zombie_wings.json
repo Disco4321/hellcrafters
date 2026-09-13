@@ -1,0 +1,23 @@
+{
+  "id": "minecraft:spider",
+  "parts": [
+    {
+      "name": "left_leg_front",
+      "width": 0.3,
+      "height": 0.3,
+      "positioner": {
+        "type": "rotating",
+        "offset": [1.0, 0.5, 0.5]
+      }
+    },
+    {
+      "name": "right_leg_front",
+      "width": 0.3,
+      "height": 0.3,
+      "positioner": {
+        "type": "rotating",
+        "offset": [-1.0, 0.5, 0.5]
+      }
+    }
+  ]
+}
