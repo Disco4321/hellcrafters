@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.function.Predicate;
 
 @Mixin(value = EntityUtil.class, priority = 999)
-public class TACZMixin {
+public class EntityUtilMixin {
 
     private static final Predicate<Entity> PROJECTILE_TARGETS = (input) -> {
         return input != null && input.isPickable() && !input.isSpectator();
@@ -75,11 +75,15 @@ public class TACZMixin {
                 }
             }
 
+            // if the bullet hit a custom OBB hitbox, we'll register that as an actual hit
             if(closestBoneHitbox != null) {
                 ci.setReturnValue(new EntityKineticBullet.EntityResult(entity, startVec.lerp(endVec, 0.5), false));
 
                 HellCrafters.LOGGER.info("Final Result: {}", closestBoneHitbox.getBoneName());
                 HellCrafters.LOGGER.info("            : {}", minDistance);
+            } else {
+                // if the bullet missed every custom hitbox, we want it to continue travelling
+                ci.setReturnValue(null);
             }
 
             /**
