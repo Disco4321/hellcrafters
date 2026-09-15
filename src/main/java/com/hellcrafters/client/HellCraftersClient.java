@@ -8,6 +8,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderers;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -15,6 +16,7 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.client.event.RenderLivingEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
@@ -46,6 +48,7 @@ public class HellCraftersClient {
 
     @SubscribeEvent
     static void onRender(RenderLivingEvent.Post<?, ?> event) {
+        if( !Minecraft.getInstance().player.getMainHandItem().is(Items.STICK) ) return;
 
         // setting up our main variables
         VertexConsumer buffer = event.getMultiBufferSource().getBuffer(RenderType.LINES);
@@ -62,6 +65,18 @@ public class HellCraftersClient {
         renderLine(poseStack, buffer, new Vector3f(), new Vector3f(0,1,0));
 
         // pops the latest Pose off the PoseStack
+        poseStack.popPose();
+    }
+
+    @SubscribeEvent
+    static void  onRenderLevelEvent(RenderLevelStageEvent event) {
+        if(!event.getStage().equals("AFTER_PARTICLES")) return;
+
+        VertexConsumer buffer = Minecraft.getInstance().renderBuffers().bufferSource().getBuffer(RenderType.LINES);
+        PoseStack poseStack = event.getPoseStack();
+
+        poseStack.pushPose();
+        renderLine(poseStack, buffer, event.getCamera().getPosition().toVector3f(), event.getCamera().getLookVector());
         poseStack.popPose();
     }
 

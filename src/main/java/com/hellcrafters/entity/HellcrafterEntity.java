@@ -48,13 +48,14 @@ public class HellcrafterEntity extends PathfinderMob implements GeoEntity, BoneH
     public void tick() {
         super.tick();
 
+
         // ensure this only runs once on server side
         if(this.level().isClientSide) return;
 
         // returns early if no hitboxes are added
         if(additionalHitboxes.isEmpty()) return;
 
-        // snagging the geoModel of the entity, as it'll give us bone positions
+        // snagging the geoModel of the entity, as it'll hopefully give us bone positions
         GeoModel<?> geoModel = RenderUtil.getGeoModelForEntity(this);
 
         // notably this doesn't exist in certain weird cases, like when the player is still loading in
@@ -62,6 +63,8 @@ public class HellcrafterEntity extends PathfinderMob implements GeoEntity, BoneH
             HellCrafters.LOGGER.warn("The geoModel for ${this} returned null");
             return;
         }
+
+
 
         /*
         // loops through every bone name with an added hitbox, updating the position of the OBB hitbox
@@ -78,7 +81,7 @@ public class HellcrafterEntity extends PathfinderMob implements GeoEntity, BoneH
     }
 
     @Override
-    public  boolean isPickable() { return false; } // means the main hitbox can't be targeted
+    public  boolean isPickable() { return true; } // means the main hitbox can't be targeted
 
 
 

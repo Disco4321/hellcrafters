@@ -2,26 +2,35 @@ package com.hellcrafters.entity;
 
 
 import com.hellcrafters.HellCrafters;
-import dev.customhitboxlib.api.PartDefinition;
-import dev.customhitboxlib.api.PartPositioners;
+import dev.xylonity.knightlib.api.entity.hitbox.BoneHitbox;
+import dev.xylonity.knightlib.api.entity.hitbox.BoneHitboxHolder;
+import dev.xylonity.knightlib.api.entity.hitbox.BoneHitboxManager;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.PathfinderMob;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.Nullable;
+import software.bernie.geckolib.animatable.GeoEntity;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.AnimatableManager;
 import software.bernie.geckolib.animation.AnimationController;
 import software.bernie.geckolib.constant.DefaultAnimations;
+import software.bernie.geckolib.util.GeckoLibUtil;
 
 
-public class TestEntity extends HellcrafterEntity{
-    // custom hitbox information
+public class TestEntity extends Mob implements GeoEntity, BoneHitboxHolder {
+    private final AnimatableInstanceCache geoCache = GeckoLibUtil.createInstanceCache(this);
+    private final BoneHitboxManager hitboxManager = new BoneHitboxManager(this);
     private final ResourceLocation hitBoxLocation = ResourceLocation.fromNamespaceAndPath(HellCrafters.MODID, "hitboxes/test_entity.json");
+
+
+
 
     /*@Override
     protected void setOnHitBehavior() {
@@ -68,27 +77,27 @@ public class TestEntity extends HellcrafterEntity{
     //};
 
 
-    public TestEntity(EntityType<? extends PathfinderMob> type, Level level) {
+    public TestEntity(EntityType<? extends Mob> type, Level level) {
         super(type, level);
 
+        // adds all our OBB boneHitboxes, based off the geckolib bones
+        assert this.getBoneHitboxManager() != null;
+        this.getBoneHitboxManager().add(BoneHitbox.create("red_bone"));
+        this.getBoneHitboxManager().add(BoneHitbox.create("green_bone"));
+        this.getBoneHitboxManager().add(BoneHitbox.create("head"));
+        this.getBoneHitboxManager().add(BoneHitbox.create("blue_bone"));
 
-        this.addCustomPart("head", PartDefinition.of("head", 1.0F, 1.0F, PartPositioners.atOffset(1, 1, 1), true));
-        //getBoneHitboxManager().add(BoneHitbox.create("red_bone", 1)
-                //.filter(Collisions.projectileCollisionFilter)
-                //.cooldown(2));
-        //mainHitboxDisabled = true;
-
-                /*(hitBox, target) -> {
-            HellCrafters.LOGGER.info("I'm hit!");
-            if( hitBox.getBoneName().equalsIgnoreCase("red_bone"))
-                HellCrafters.LOGGER.info("OUCH");
-        });*/
-
+        // determines the onHit behavior when an entity touches another entity
+        // TODO - Decide if this is the approach I want to take with dealing damage to the entity. Already sounds
+        //  like I'm gonna call the hurt function manually server-side, but whether I filter through here or not idk.
+        this.getBoneHitboxManager().onHit(((boneHitbox, entity) -> {
+            HellCrafters.LOGGER.info(boneHitbox.getBoneName());
+        }));
     }
 
     public static AttributeSupplier.Builder createAttributes() {
         return Animal.createLivingAttributes()
-                .add(Attributes.MAX_HEALTH, 10d)
+                .add(Attributes.MAX_HEALTH, 10000d)
                 .add(Attributes.MOVEMENT_SPEED, 0.25D)
                 .add(Attributes.FOLLOW_RANGE, 24D);
     }
@@ -100,11 +109,22 @@ public class TestEntity extends HellcrafterEntity{
     }
 
     @Override
+    public boolean hurt(DamageSource source, float amount) {
+        HellCrafters.LOGGER.info("Position: {}", source.getMsgId());
+        return super.hurt(source, amount);
+    }
+
+    /**
+     * The big tick method
+     */
+    @Override
     public void tick() {
         super.tick();
         if (!level().isClientSide) {
+            this.getBoneHitboxManager().tick();
         }
     }
+
 
     // This method is called when your entity is first being used for animations, and
     // is where we define our actual animation handling
@@ -114,9 +134,9 @@ public class TestEntity extends HellcrafterEntity{
         controllers.add(new AnimationController<>(this, "Idle", 0, state -> state.setAndContinue(DefaultAnimations.IDLE)));
     }
 
+    // Boilerplate code
     @Override
-    public boolean hurt(DamageSource source, float amount) {
-        return super.hurt(source, amount);
-    }
-
+    public AnimatableInstanceCache getAnimatableInstanceCache() { return geoCache; }
+    @Override
+    public @Nullable BoneHitboxManager getBoneHitboxManager() { return hitboxManager; }
 }

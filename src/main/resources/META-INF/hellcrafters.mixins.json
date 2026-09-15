@@ -4,10 +4,10 @@
   "compatibilityLevel": "JAVA_21",
   "minVersion": "0.8",
   "mixins": [
-    "LivingEntityMixin"
+    "LivingEntityMixin",
+    "TACZMixin"
   ],
   "client": [
-    "EntityRenderDispatcherMixin"
   ],
   "injectors": {
     "defaultRequire": 1

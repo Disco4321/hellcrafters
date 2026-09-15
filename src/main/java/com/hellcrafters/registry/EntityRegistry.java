@@ -23,7 +23,7 @@ public final class EntityRegistry {
     // Entity Registration Section
     // massive list of entities, created and registered through helper methods
     // --------------------------------------------------
-    public static final Supplier<EntityType<TestEntity>> TEST_ENTITY = registerEntity("test_entity", TestEntity::new, 0.75f, 0.35f, 0x1F1F1F, 0x0D0D0D);
+    public static final Supplier<EntityType<TestEntity>> TEST_ENTITY = registerEntity("test_entity", TestEntity::new, 0.75f, 15.0f, 0x1F1F1F, 0x0D0D0D);
     //public static final Supplier<EntityType<TestEntity>> TEST_ENTITY = registerEntity("test_entity", TestEntity::new, 0.75f, 0.35f, 0x1F1F1F, 0x0D0D0D);
     //public static final Supplier<EntityType<TestEntity>> TEST_ENTITY = registerEntity("test_entity", TestEntity::new, 0.75f, 0.35f, 0x1F1F1F, 0x0D0D0D);
 
