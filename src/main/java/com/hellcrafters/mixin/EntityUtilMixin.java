@@ -29,12 +29,23 @@ public class EntityUtilMixin {
             Vec3 startVec,
             Vec3 endVec,
             CallbackInfoReturnable<EntityKineticBullet.@Nullable EntityResult> ci) {
-
+        /*
+        HellCrafters.LOGGER.info("findEntityOnPath check: ");
         HellCrafters.LOGGER.info("Entity List : {}", bulletEntity.level().getEntities(bulletEntity, bulletEntity.getBoundingBox().expandTowards(bulletEntity.getDeltaMovement()).inflate(1.0), PROJECTILE_TARGETS).stream().toList());
         if(ci.getReturnValue() != null) HellCrafters.LOGGER.info("Final Entity: {}", ci.getReturnValue().getEntity().toString());
+
+         */
     }
 
-    //
+    /**
+     * This mixin targets the getHitResult method of the EntityUtil class, intercepting just before the return call
+     * in order to calculate whether an OBB was actually hit within an entity's AABB bounding hitbox.
+     * @param bulletEntity The bullet
+     * @param entity    The entity whose AABB was contacted
+     * @param startVec
+     * @param endVec
+     * @param ci        The return value we can modify
+     */
     @Inject(method = "getHitResult", at = @At("TAIL"), cancellable = true)
     private static void hellcrafters$getHitResult(
             Projectile bulletEntity,

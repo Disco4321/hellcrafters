@@ -2,6 +2,7 @@ package com.hellcrafters.events;
 
 import com.hellcrafters.HellCrafters;
 import com.hellcrafters.registry.EntityRegistry;
+import com.tacz.guns.api.event.common.EntityHurtByGunEvent;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.Items;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -52,17 +53,20 @@ public class ModEventBusEvents {
     public static void onEntityTickEvent(EntityTickEvent.Post event) {
         if (event.getEntity().level().isClientSide) return;
         if (!(event.getEntity() instanceof Projectile)) return;
-
-        //if (event.getEntity() instanceof AbstractArrow arrow)
-            //HellCrafters.LOGGER.info("hello");
-
     }
 
+    // tacz bullets do not trigger this event
     @SubscribeEvent
     public static void onProjectileImpactEvent(ProjectileImpactEvent event) {
         if(event.getEntity().level().isClientSide) return;
-        HellCrafters.LOGGER.info(event.getRayTraceResult().getType().toString());
-        HellCrafters.LOGGER.info("SOMETHING WAS HIT EVERYBODY PANIC");
+        HellCrafters.LOGGER.info("onProjectileImpactEvent:");
+        HellCrafters.LOGGER.info("RayTraceResult: {}", event.getRayTraceResult().getType().toString());
+    }
+
+    @SubscribeEvent
+    public static void onEntityHurtByGunEvent(EntityHurtByGunEvent event) {
+        HellCrafters.LOGGER.info("onEntityHurtByGunEvent:");
+        HellCrafters.LOGGER.info("Bullet entity: {}", event.getBullet().toString());
     }
 
 

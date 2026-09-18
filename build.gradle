@@ -155,6 +155,9 @@ dependencies {
     compileOnly "dev.xylonity.knightlib:knightlib-common-${minecraft_version}:${knightlib_version}"
     runtimeOnly files("libs/knightlib-neoforge-${minecraft_version}-${knightlib_version}.jar")
 
+    // Hopefully zip file loading
+    runtimeOnly files("libs/[eof]helldivers_gun_pack.zip")
+
     // Veil dependencies - unecessary as of rn
     /*
     implementation("foundry.veil:veil-neoforge-${minecraft_version}:${veil_version}") {

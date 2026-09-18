@@ -16,6 +16,16 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import org.slf4j.Logger;
 
+/**
+ * TODO - Calculate hits with melee attacks on OBBs
+ * TODO - Calculate collision detection with vanilla projectiles on OBBs
+ */
+
+
+
+
+
+
 // The value here should match an entry in the META-INF/neoforge.mods.toml file
 @Mod(HellCrafters.MODID)
 public class HellCrafters {
