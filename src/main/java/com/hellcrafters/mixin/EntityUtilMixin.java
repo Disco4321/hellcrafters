@@ -97,13 +97,6 @@ public class EntityUtilMixin {
                 ci.setReturnValue(null);
             }
 
-            /**
-             * TODO - Now that I've narrowed down exactly which OBB hitbox gets damaged, figure out how to damage it
-             *  likely will require mixing in to EntityResult, and adding data to pass through. Alternatively, lets
-             *  just use this mixin to cancel detection if the bullet misses any OBBs. We can assign damage elsewhere
-             *  we need to dig into EntityKineticBullet$onBulletTick and EntityKineticBullet$onHitEntity
-             */
-
 
             /**
              * TODO Figure out what the clipped ray-cast is required for in EntityResult, and how I can calculate
