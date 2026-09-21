@@ -6,7 +6,8 @@
   "mixins": [
     "LivingEntityMixin",
     "EntityUtilMixin",
-    "EntityKineticBulletMixin"
+    "EntityKineticBulletMixin",
+    "EntityKineticBulletAccessor"
   ],
   "client": [
   ],

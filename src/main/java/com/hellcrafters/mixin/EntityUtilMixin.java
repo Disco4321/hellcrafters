@@ -1,10 +1,10 @@
 package com.hellcrafters.mixin;
 
 import com.hellcrafters.HellCrafters;
+import com.hellcrafters.entity.HellcrafterEntity;
+import com.hellcrafters.registry.CollisionUtil;
 import com.tacz.guns.entity.EntityKineticBullet;
 import com.tacz.guns.util.EntityUtil;
-import dev.xylonity.knightlib.api.entity.hitbox.BoneHitbox;
-import dev.xylonity.knightlib.api.entity.hitbox.BoneHitboxHolder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.phys.Vec3;
@@ -14,37 +14,18 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.util.List;
-import java.util.function.Predicate;
-
 @Mixin(value = EntityUtil.class, priority = 999)
 public class EntityUtilMixin {
 
-    private static final Predicate<Entity> PROJECTILE_TARGETS = (input) -> {
-        return input != null && input.isPickable() && !input.isSpectator();
-    };
-    @Inject(method = "findEntityOnPath", at = @At("TAIL"))
-    private static void hellcrafters$findEntityOnPath(
-            Projectile bulletEntity,
-            Vec3 startVec,
-            Vec3 endVec,
-            CallbackInfoReturnable<EntityKineticBullet.@Nullable EntityResult> ci) {
-        /*
-        HellCrafters.LOGGER.info("findEntityOnPath check: ");
-        HellCrafters.LOGGER.info("Entity List : {}", bulletEntity.level().getEntities(bulletEntity, bulletEntity.getBoundingBox().expandTowards(bulletEntity.getDeltaMovement()).inflate(1.0), PROJECTILE_TARGETS).stream().toList());
-        if(ci.getReturnValue() != null) HellCrafters.LOGGER.info("Final Entity: {}", ci.getReturnValue().getEntity().toString());
-
-         */
-    }
-
     /**
-     * This mixin targets the getHitResult method of the EntityUtil class, intercepting just before the return call
-     * in order to calculate whether an OBB was actually hit within an entity's AABB bounding hitbox.
-     * @param bulletEntity The bullet
-     * @param entity    The entity whose AABB was contacted
-     * @param startVec
-     * @param endVec
-     * @param ci        The return value we can modify
+     * This method runs on every single entity within a bullet's AABB delta inflation check. We're mixing in to
+     * just before the return call in order to calculate whether an OBB was actually hit within an entity's AABB
+     * bounding hitbox.
+     * @param bulletEntity  The bullet
+     * @param entity        The entity whose AABB was contacted
+     * @param startVec      The starting position of the bullet in global coords
+     * @param endVec        Pretty sure this is the bullet's coords after the delta movement
+     * @param ci            The return value we can modify
      */
     @Inject(method = "getHitResult", at = @At("TAIL"), cancellable = true)
     private static void hellcrafters$getHitResult(
@@ -58,50 +39,23 @@ public class EntityUtilMixin {
         // didn't connect with any vanilla hitboxes, we can ignore this further check
         if(ci.getReturnValue() == null) return;
 
-        // only run this code if it's a custom OBB hitbox entity
-        if(entity instanceof BoneHitboxHolder) {
+        // OBB hitboxes don't exist on the client, which I'm sure will have ramifications later
+        if(entity.level().isClientSide) return;
 
-            // grabs a list of every bone OBB hitbox in the entity
-            List<BoneHitbox> boneHitboxes = ((BoneHitboxHolder) entity).getBoneHitboxManager().getAll().stream().toList();
+        // ensures this check only applies on our custom entities
+        if(!(entity instanceof HellcrafterEntity)) return;
 
-            // sets up some variables to help calculations
-            BoneHitbox closestBoneHitbox = null;
-            double minDistance = Double.MAX_VALUE;
-            double distance;
-
-            // loops through every boneHitbox in the entity, to find the closest
-            for(BoneHitbox boneHitbox : boneHitboxes) {
-                distance = (boneHitbox.getCurrentOBB() != null ? boneHitbox.getCurrentOBB().rayIntersects(startVec, endVec) : -1);
-
-                // rayIntersects returns -1 if no collision is found with current boneHitbox
-                if (distance != -1) {
-
-                    // calculates and updates the closest hitbox variables
-                    //HellCrafters.LOGGER.info("Collision detected");
-                    if (distance < minDistance) {
-                        //HellCrafters.LOGGER.info("Updated minDistance: {}", distance);
-                        closestBoneHitbox = boneHitbox;
-                        minDistance = distance;
-                    }
-                }
-            }
-
-            // if the bullet hit a custom OBB hitbox, we'll register that as an actual hit
-            if(closestBoneHitbox != null) {
-                ci.setReturnValue(new EntityKineticBullet.EntityResult(entity, startVec.lerp(endVec, 0.5), false));
-
-                HellCrafters.LOGGER.info("Final Result: {}", closestBoneHitbox.getBoneName());
-                HellCrafters.LOGGER.info("            : {}", minDistance);
-            } else {
-                // if the bullet missed every custom hitbox, we want it to continue travelling
-                ci.setReturnValue(null);
-            }
-
-
-            /**
-             * TODO Figure out what the clipped ray-cast is required for in EntityResult, and how I can calculate
-             *  something similar with the OBB boxes.
-             */
+        if(CollisionUtil.getUnsortedRaycast(entity, startVec, endVec)) {
+            // tests if the bullet collides with any OBB boxes, updating the return value if so
+            ci.setReturnValue(new EntityKineticBullet.EntityResult(entity, startVec.lerp(endVec, 0.5), false));
+            HellCrafters.LOGGER.info("getHitResult: Detected collision");
+        } else {
+            // negates the interaction, allowing the bullet to pass cleanly through
+            ci.setReturnValue(null);
         }
+        /*
+         * TODO Figure out what the clipped ray-cast is required for in EntityResult, and how I can calculate
+         *  something similar with the OBB boxes.
+         */
     }
 }

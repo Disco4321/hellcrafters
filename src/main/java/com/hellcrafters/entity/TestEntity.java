@@ -3,7 +3,6 @@ package com.hellcrafters.entity;
 
 import com.hellcrafters.HellCrafters;
 import dev.xylonity.knightlib.api.entity.hitbox.BoneHitbox;
-import dev.xylonity.knightlib.api.entity.hitbox.BoneHitboxHolder;
 import dev.xylonity.knightlib.api.entity.hitbox.BoneHitboxManager;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.damagesource.DamageSource;
@@ -16,7 +15,6 @@ import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
-import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.AnimatableManager;
 import software.bernie.geckolib.animation.AnimationController;
@@ -24,7 +22,7 @@ import software.bernie.geckolib.constant.DefaultAnimations;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 
-public class TestEntity extends PathfinderMob implements GeoEntity, BoneHitboxHolder {
+public class TestEntity extends HellcrafterEntity {
     private final AnimatableInstanceCache geoCache = GeckoLibUtil.createInstanceCache(this);
     private final BoneHitboxManager hitboxManager = new BoneHitboxManager(this);
     private final ResourceLocation hitBoxLocation = ResourceLocation.fromNamespaceAndPath(HellCrafters.MODID, "hitboxes/test_entity.json");
