@@ -2,7 +2,7 @@ package com.hellcrafters.mixin;
 
 import com.hellcrafters.HellCrafters;
 import com.hellcrafters.entity.HellcrafterEntity;
-import com.hellcrafters.registry.CollisionUtil;
+import com.hellcrafters.util.CollisionUtil;
 import com.tacz.guns.entity.EntityKineticBullet;
 import com.tacz.guns.util.EntityUtil;
 import net.minecraft.world.entity.Entity;

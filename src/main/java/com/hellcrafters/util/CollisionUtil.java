@@ -1,4 +1,4 @@
-package com.hellcrafters.registry;
+package com.hellcrafters.util;
 
 import com.hellcrafters.entity.HellcrafterEntity;
 import dev.xylonity.knightlib.api.entity.hitbox.BoneHitbox;
@@ -35,7 +35,6 @@ public class CollisionUtil {
                 .filter(boneHitboxDoubleEntry -> boneHitboxDoubleEntry.getValue() != -1d)
                 // Map.Entry provides a beautiful comparator to help sort these types of Pairs based off Value
                 .sorted(Map.Entry.comparingByValue())
-                // convert back to List to return
                 .toList();
     }
 

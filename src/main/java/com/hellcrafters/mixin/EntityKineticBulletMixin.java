@@ -1,16 +1,24 @@
 package com.hellcrafters.mixin;
 
 import com.hellcrafters.HellCrafters;
+import com.hellcrafters.entity.HellcrafterEntity;
+import com.hellcrafters.util.CollisionUtil;
 import com.tacz.guns.entity.EntityKineticBullet;
 import com.tacz.guns.util.TacHitResult;
-import dev.xylonity.knightlib.api.entity.hitbox.BoneHitboxHolder;
+import dev.xylonity.knightlib.api.entity.hitbox.BoneHitbox;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 import org.apache.commons.lang3.tuple.Pair;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.gen.Invoker;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
+
+import java.util.List;
+import java.util.Map;
 
 @Mixin(EntityKineticBullet.class)
 interface EntityKineticBulletAccessor {
@@ -24,14 +32,19 @@ interface EntityKineticBulletAccessor {
 
 @Mixin(value = EntityKineticBullet.class, priority = 999)
 public class EntityKineticBulletMixin {
+    @Shadow int pierce;
+    @Shadow int owner;
+    @Shadow ResourceLocation gunId;
+    @Shadow ResourceLocation gunDisplayId;
+
     /**
      * This method redirects the onHitEntity call within the onBulletTick method, letting us dynamically modify the
      * piercing values of the bullet, and allowing it to hit several sub parts within a minecraft entity's bounding AABB
      * This also allows us to calculate which part is affected, and damage that part individually
      * @param bullet The bullet in question
      * @param result The HitResult of the entity interaction
-     * @param startVec The starting global coords of the hit ray
-     * @param endVec The ending global coords of the hit ray
+     * @param startVec The starting global coordinates of the hit ray
+     * @param endVec The ending global coordinates of the hit ray
      */
     @Redirect(method = "onBulletTick", at = @At(
             value = "INVOKE",
@@ -40,16 +53,39 @@ public class EntityKineticBulletMixin {
     private void hellcrafters$onHitEntityRedirect(EntityKineticBullet bullet, TacHitResult result, Vec3 startVec, Vec3 endVec) {
         HellCrafters.LOGGER.info("onHitEntity: ");
 
-        // check if the target entity is an instanceof the one we want
-        if( !(result.getEntity() instanceof BoneHitboxHolder) ) {
-
+        // forwards the onHitEntity call to the actual method if this isn't a relevant entity
+        if( !(result.getEntity() instanceof HellcrafterEntity)) {
+            HellCrafters.LOGGER.info("Did not hit a Hellcrafter Entity");
+            ((EntityKineticBulletAccessor) bullet).hellcrafters$onHitEntity(result, startVec, endVec);
+            return;
         }
 
-        ((EntityKineticBulletAccessor) bullet).hellcrafters$onHitEntity(result, startVec, endVec);
+        Entity entity = result.getEntity();
+
+        // calculate how many parts it passes through
+        List<Map.Entry<BoneHitbox, Double>> boneHitboxes = CollisionUtil.getSortedRaycast(entity, startVec, endVec);
+
+        // Since we're taking over this entire method, we gotta follow some boilerplate code
+        //EntityHurtByGunEvent.Pre preEvent = new EntityHurtByGunEvent.Pre(this, entity, attacker, gunId, gunDisplayId, damage, sources, false, 0, LogicalSide.SERVER);
+
         /*
-         *  TODO - Create an Invoke Mixin in order to access the real onHitEntity() method,
-         *   as that's protected and I can't quite access it from here
+        TODO - If i just can have access to the hit vector within the neoforge event, we should be able to calculate
+         everything we need to deal damage. Might be able to access widen bullet's private variables and use them in
+         a different class file
          */
+
+        // pulls specific info about each piece
+        boneHitboxes.forEach(boneHitbox -> {
+            // determines the armor level of the part, and compares to bullet's armor piercing
+
+            // detects whether bullet should pierce if it has a pierce value
+
+            // modifies private pierce variable of bullet
+            pierce = 5;
+
+            // calculates and applies damage to entity based on the part
+
+        });
     }
 
     /**
@@ -66,10 +102,8 @@ public class EntityKineticBulletMixin {
     ))
     private void hellcrafters$attackEntityRedirect(EntityKineticBullet bullet, EntityKineticBullet.MaybeMultipartEntity parts, float damage, Pair<DamageSource, DamageSource> sources) {
         HellCrafters.LOGGER.info("HCAttackEntity: ");
-        /*
-         *  TODO - Likewise above, I need to Invoke the attackEntity() method from here when
-         *   we're done modifying what I need to modify, but it's private... Sooooo deeper we go
-         */
+
+
         ((EntityKineticBulletAccessor) bullet).hellcrafters$tacAttackEntity(parts, damage, sources);
     }
 }
